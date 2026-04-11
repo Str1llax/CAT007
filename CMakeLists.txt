@@ -4,3 +4,4 @@ project(SD3)
 set(CMAKE_CXX_STANDARD 20)
 
 add_executable(CAT007 CAT007SuperComputer.cpp)
+add_executable(GenBin programBuilder.cpp)

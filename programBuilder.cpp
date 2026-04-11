@@ -1,5 +1,4 @@
-#define BUILD
-#ifdef BUILD
+// TODO Documentation
 
 #include <fstream>
 #include <string>
@@ -149,9 +148,8 @@ namespace CATEncryption {
         }
     }
 }
-#endif
+
 int main() {
-#ifdef BUILD
     std::fstream instruction_file, reference_file;
     instruction_file.open("KittyDecryptorV1.bin", std::ios::out | std::ios::binary | std::ios::trunc);
     reference_file.open("InstructionReference2.txt", std::ios::in);
@@ -166,8 +164,6 @@ int main() {
     reference_file.close();
 #ifdef LOGGER
     LOG_FILE.close();
-#endif
-
 #endif
     return 0;
 }
