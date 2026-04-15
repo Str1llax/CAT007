@@ -12,7 +12,40 @@ The instruction is 16 bits long. Five bits are allocated to the opcode.
 The program counter is 8 bits long, so to read the instruction, you need to read one byte at a time, twice.
 The first byte reads bits 15–08 of the instruction, and the second byte reads bits 07–00.
 
-Instruction set:
+### There are 4 instruction types:
+
+
+I type:
+```
+15  14  13  12  11  10   9   8   7   6   5   4   3   2   1   0 
+[ ] [ ] [ ] [ ] [ ] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] [0] 
+<-----opcode------> <--------------fixed bits----------------->
+```
+II type:
+```
+15  14  13  12  11  10   9   8   7   6   5   4   3   2   1   0 
+[ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [0] [ ] [ ] [ ] [0] [0] [0] [0] 
+<-----opcode------> <--dest.--> <-> <---src---> <----fixed---->
+                                 ^ mode
+15  14  13  12  11  10   9   8   7   6   5   4   3   2   1   0 
+[ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [1] [ ] [ ] [ ] [0] [ ] [ ] [ ] 
+<-----opcode------> <--dest.--> <-> <--src 1--> <-> <--src 2-->
+                                 ^ mode          ^ fixed
+```
+III type:
+```
+15  14  13  12  11  10   9   8   7   6   5   4   3   2   1   0 
+[ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] 
+<-----opcode------> <--dest.--> <---------constant------------>
+```
+IV type:
+```
+15  14  13  12  11  10   9   8   7   6   5   4   3   2   1   0 
+[ ] [ ] [ ] [ ] [ ] [0] [0] [0] [ ] [ ] [ ] [ ] [ ] [ ] [ ] [ ] 
+<-----opcode------> <--fixed--> <---------constant------------>
+```
+
+### Instruction set:
 | Instruction | Code | Type | Mode | Comment |
 | ----------- | ---- | ---- | ---- | ------- |
 | NOP | 0x00 | I |  | Nothing happens. |
