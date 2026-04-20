@@ -419,10 +419,11 @@ namespace CATLogic {
             if (REG[(*result_reg >> 5)] < REG[(*source_reg >> 5)] || REG[(*result_reg >> 5)] < REG[((*source_reg & 0x1C) >> 2)]) flags = flags | 0x1; //carry
             if ((REG[(*source_reg >> 5)] & 0x80) == (REG[((*source_reg & 0x1C) >> 2)] & 0x80) && (REG[(*result_reg >> 5)] & 0x80) != (REG[(*source_reg >> 5)] & 0x80)) flags = flags | 0x20; //overflow
         } else {
-            const byte previous_res = REG[(*result_reg >> 5)];
-            REG[(*result_reg >> 5)] = REG[(*source_reg >> 5)] + REG[(*result_reg >> 5)];
-            if (REG[(*result_reg >> 5)] < REG[(*source_reg >> 5)]) flags = flags | 0x1; //carry
-            if ((previous_res & 0x80) == (REG[(*result_reg >> 5)] & 0x80) && (REG[(*result_reg >> 5)] & 0x80) != (REG[(*source_reg >> 5)] & 0x80)) flags = flags | 0x20; //overflow
+            byte* previous_res = &REG[255];
+            *previous_res = REG[(*result_reg >> 5)];
+            REG[(*result_reg >> 5)] = REG[(*result_reg >> 5)] + REG[(*source_reg >> 5)];
+            if (REG[(*result_reg >> 5)] < REG[(*source_reg >> 5)] || REG[(*result_reg >> 5)] < *previous_res) flags = flags | 0x1; //carry
+            if ((*previous_res & 0x80) == (REG[(*result_reg >> 5)] & 0x80) && (REG[(*result_reg >> 5)] & 0x80) != (REG[(*source_reg >> 5)] & 0x80)) flags = flags | 0x20; //overflow
         }
         if (REG[(*result_reg >> 5)] == 0x00) flags = flags | 0x10; //zero
         ++program_counter;
@@ -469,10 +470,11 @@ namespace CATLogic {
             if (REG[(*result_reg >> 5)] > REG[(*source_reg >> 5)] || REG[(*result_reg >> 5)] > REG[((*source_reg & 0x1C) >> 2)]) flags = flags | 0x1; //carry
             if ((REG[(*source_reg >> 5)] & 0x80) == (REG[((*source_reg & 0x1C) >> 2)] & 0x80) && (REG[(*result_reg >> 5)] & 0x80) != (REG[(*source_reg >> 5)] & 0x80)) flags = flags | 0x20; //overflow
         } else {
-            const byte previous_res = REG[(*result_reg >> 5)];
+            byte* previous_res = &REG[255];
+            *previous_res = REG[(*result_reg >> 5)];
             REG[(*result_reg >> 5)] = REG[(*result_reg >> 5)] - REG[(*source_reg >> 5)];
-            if (REG[(*result_reg >> 5)] < REG[(*source_reg >> 5)]) flags = flags | 0x1; //carry
-            if ((previous_res & 0x80) == (REG[(*result_reg >> 5)] & 0x80) && (REG[(*result_reg >> 5)] & 0x80) != (REG[(*source_reg >> 5)] & 0x80)) flags = flags | 0x20; //overflow
+            if (REG[(*result_reg >> 5)] > REG[(*source_reg >> 5)] || REG[(*result_reg >> 5)] > *previous_res) flags = flags | 0x1; //carry
+            if ((*previous_res & 0x80) == (REG[(*result_reg >> 5)] & 0x80) && (REG[(*result_reg >> 5)] & 0x80) != (REG[(*source_reg >> 5)] & 0x80)) flags = flags | 0x20; //overflow
         }
         if (REG[(*result_reg >> 5)] == 0x00) flags = flags | 0x10; //zero
         ++program_counter;
@@ -782,7 +784,7 @@ public:
         ++program_counter;
         instruction_reg += *program_counter;
 #ifdef DEBUG_MODE
-        LOG_FILE << "Fetching instruction: " << std::bitset<16>(instruction_reg) << std::endl;
+        LOG_FILE << "\nFetching instruction: " << std::bitset<16>(instruction_reg) << std::endl;
 #endif
     }
     void decode() const {
